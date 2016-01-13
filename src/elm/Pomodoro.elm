@@ -17,7 +17,7 @@ init =
         (timer, timerFx) = Timer.init
     in
         ( Model timer
-        , timerFx
+        , Effects.map TimerControl timerFx
         )
 
 
@@ -25,6 +25,7 @@ type Action
     = Pomodoro
     | ShortBreak
     | LongBreak
+    | TimerControl Timer.Action
 
 
 update : Action -> Model -> (Model, Effects Action)
@@ -32,26 +33,44 @@ update action model =
     case action of
         Pomodoro ->
             let
-                (timer, fx) = Timer.update (Timer.SetTime 25 * minute) model.timer
+                (timer, fx) = Timer.update (Timer.SetTime (25 * minute)) model.timer
             in
-                ({ model | timer = timer }, fx)
+                ({ model | timer = timer }
+                , Effects.map TimerControl fx
+                )
         ShortBreak ->
             let
-                (timer, fx) = Timer.update (Timer.SetTime 5 * minute) model.timer
+                (timer, fx) = Timer.update (Timer.SetTime (5 * minute)) model.timer
             in
-                ({ model | timer = timer }, fx)
+                ({ model | timer = timer }
+                , Effects.map TimerControl fx
+                )
         LongBreak ->
             let
-                (timer, fx) = Timer.update (Timer.SetTime 15 * minute) model.timer
+                (timer, fx) = Timer.update (Timer.SetTime (15 * minute)) model.timer
             in
-                ({ model | timer = timer }, fx)
+                ({ model | timer = timer }
+                , Effects.map TimerControl fx
+                )
+        TimerControl act ->
+            let
+                (timer, fx) = Timer.update act model.timer
+            in
+                ({ model | timer = timer }
+                , Effects.map TimerControl fx
+                )
 
 
 view : Signal.Address Action -> Model -> Html
 view address model =
     div []
-        [ Timer.view address model.timer
-        , button [ onClick address Timer.Start ] [ text "Start" ]
-        , button [ onClick address Timer.Stop ] [ text "Stop" ]
-        , button [ onClick address Timer.Reset ] [ text "Reset" ]
+        [ div []
+            [ a [ onClick address Pomodoro ] [ text "Pomodoro" ]
+            , a [ onClick address ShortBreak ] [ text "Short Break" ]
+            , a [ onClick address LongBreak ] [ text "Long Break" ]
+            ]
+        , Timer.view (Signal.forwardTo address TimerControl) model.timer
+        , button [ onClick address (TimerControl Timer.Start) ] [ text "Start" ]
+        , button [ onClick address (TimerControl Timer.Stop) ] [ text "Stop" ]
+        , button [ onClick address (TimerControl Timer.Reset) ] [ text "Reset" ]
         ]

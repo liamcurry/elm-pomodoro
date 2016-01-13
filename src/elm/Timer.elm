@@ -83,6 +83,7 @@ update action model =
                 else
                     ( model, Effects.none )
 
+
 view : Signal.Address Action -> Model -> Html
 view address model =
     let
