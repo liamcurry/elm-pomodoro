@@ -1,6 +1,5 @@
 import Effects exposing (Never)
-import Pomodoro exposing (init, update, view, Model)
-import Time exposing (minute)
+import Pomodoro exposing (init, update, view, inputs, Model)
 import StartApp
 import Task
 import Html exposing (Html)
@@ -12,7 +11,7 @@ app =
         { init = init
         , update = update
         , view = view
-        , inputs = []
+        , inputs = inputs
         }
 
 

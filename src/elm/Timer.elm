@@ -2,7 +2,7 @@ module Timer where
 
 import Effects exposing (Effects)
 import Html exposing (..)
-import Html.Events exposing (onClick)
+import Html.Attributes exposing (class)
 import Time exposing (Time, inSeconds, inMinutes, minute)
 import String exposing (padLeft)
 
@@ -12,6 +12,7 @@ type alias Model =
     , timeLeft : Time
     , prevClockTime : Time
     , isRunning : Bool
+    , doneMailbox : Signal.Mailbox Bool
     }
 
 
@@ -21,6 +22,7 @@ init =
     , timeLeft = 5 * minute
     , prevClockTime = 0
     , isRunning = False
+    , doneMailbox = Signal.mailbox False
     }, Effects.none
     )
 
@@ -28,6 +30,7 @@ init =
 type Action
     = Start
     | Stop
+    | Toggle
     | Reset
     | SetTime Time
     | Tick Time
@@ -37,9 +40,14 @@ update : Action -> Model -> (Model, Effects Action)
 update action model =
     case action of
         Start ->
-            ( { model | isRunning = True }, Effects.tick Tick )
+            ( { model | isRunning = True, prevClockTime = 0 }, Effects.tick Tick )
         Stop ->
             ( { model | isRunning = False }, Effects.none )
+        Toggle ->
+            if model.isRunning then
+                ( { model | isRunning = False }, Effects.none )
+            else
+                ( { model | isRunning = True, prevClockTime = 0 }, Effects.tick Tick )
         Reset ->
             ( { model
               | timeLeft = model.timeTotal
@@ -73,13 +81,16 @@ update action model =
                         , Effects.tick Tick
                         )
                     else
-                        ( { model
-                          | timeLeft = model.timeTotal
-                          , prevClockTime = 0
-                          , isRunning = False
-                          }
-                        , Effects.none
-                        )
+                        let
+                            task = Signal.send model.doneMailbox.address True
+                        in
+                            ( { model
+                            | timeLeft = model.timeTotal
+                            , prevClockTime = 0
+                            , isRunning = False
+                            }
+                            , Effects.none
+                            )
                 else
                     ( model, Effects.none )
 
@@ -94,5 +105,21 @@ view address model =
             |> inSeconds
             |> truncate
     in
-        div []
-            [ text ((toString minutes) ++ ":" ++ (padLeft 2 '0' (toString seconds))) ]
+        div [ class "timer" ]
+            [ span
+                [ class "timerMin" ]
+                [ minutes
+                    |> toString
+                    |> text
+                ]
+            , span
+                [ class "timerSep" ]
+                [ text ":" ]
+            , span
+                [ class "timerSec" ]
+                [ seconds
+                    |> toString
+                    |> padLeft 2 '0'
+                    |> text
+                ]
+            ]

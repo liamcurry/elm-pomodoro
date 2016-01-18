@@ -1,2 +1,70 @@
 body {
   font-family: Helvetica, Arial, sans-serif; }
+
+.container {
+  margin: 0 auto;
+  max-width: 700px; }
+
+.layout {
+  display: flex; }
+  .layout.equal > * {
+    flex: 1; }
+  .layout.justifyBetween {
+    justify-content: space-between; }
+  .layout.justifyAround {
+    justify-content: space-around; }
+  .layout.center {
+    align-items: center; }
+
+.row {
+  flex-direction: row; }
+  .row.reverse {
+    flex-direction: row-reverse; }
+
+.col {
+  flex-direction: column; }
+  .col.reverse {
+    flex-direction: column-reverse; }
+
+.flex {
+  flex: 1; }
+
+.flex1 {
+  flex: 1; }
+
+.flex2 {
+  flex: 2; }
+
+.flex3 {
+  flex: 3; }
+
+.flex4 {
+  flex: 4; }
+
+.flex5 {
+  flex: 5; }
+
+.flex6 {
+  flex: 6; }
+
+.flex7 {
+  flex: 7; }
+
+.flex8 {
+  flex: 8; }
+
+.flex9 {
+  flex: 9; }
+
+.flex10 {
+  flex: 10; }
+
+.flex11 {
+  flex: 11; }
+
+.flex12 {
+  flex: 12; }
+
+.timer {
+  font-size: 400%;
+  text-align: center; }

@@ -1,3 +1,46 @@
 body {
 	font-family: Helvetica, Arial, sans-serif;
 }
+.container {
+	margin: 0 auto;
+	max-width: 700px;
+}
+.layout {
+	display: flex;
+	&.equal > * {
+		flex: 1;
+	}
+	&.justifyBetween {
+		justify-content: space-between;
+	}
+	&.justifyAround {
+		justify-content: space-around;
+	}
+	&.center {
+		align-items: center;
+	}
+}
+.row {
+	flex-direction: row;
+	&.reverse {
+		flex-direction: row-reverse;
+	}
+}
+.col {
+	flex-direction: column;
+	&.reverse {
+		flex-direction: column-reverse;
+	}
+}
+.flex {
+	flex: 1;
+}
+@for $i from 1 through 12 {
+	.flex#{$i} {
+		flex: $i;
+	}
+}
+.timer {
+	font-size: 400%;
+	text-align: center;
+}
